@@ -37,23 +37,26 @@ server.get('/api/users/:id', async (req, res) => {
 })
 
 server.post('/api/users', async(req, res) => {
-    try {
-        const { name, bio } = req.body
-        if(!name || !bio){
-            res.status(422).json({
-                message: `provide name and bio`
+    const user = req.body
+    if(!user.name || !user.bio){
+        res.status(400).json({
+            message: 'provide name and bio'
+        })
+    } else {
+
+        users.insert(user)
+        .then(newUser => {
+            res.status(201).json(newUser)
+        })
+        .catch(err => {
+            res.status(400).json({
+                message: 'provide name and bio',
             })
-        } else {
-            const newUser = await users.insert({ name, bio })
-            res.status(201).json({
-                data: newUser
-            })
-        }
-    } catch(err) {
-        res.status(422).json({
-            message: `provide name and bio`
-    })
-}})
+        })
+    }
+
+
+})
 
 
 
