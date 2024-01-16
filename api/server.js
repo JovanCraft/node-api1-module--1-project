@@ -23,7 +23,9 @@ server.get('/api/users/:id', async (req, res) => {
         const { id } = req.params
         const user = await users.findById(id)
         if(!user){
-            res.status(404)
+            res.status(404).json({
+                message: `does not exist`
+            })
         } else {
             res.status(200).json(user)
         }
@@ -34,5 +36,30 @@ server.get('/api/users/:id', async (req, res) => {
     }
 })
 
+server.post('/api/users', async(req, res) => {
+    try {
+        const { name, bio } = req.body
+        if(!name || !bio){
+            res.status(422).json({
+                message: `provide name and bio`
+            })
+        } else {
+            const newUser = await users.insert({ name, bio })
+            res.status(201).json({
+                data: newUser
+            })
+        }
+    } catch(err) {
+        res.status(422).json({
+            message: `provide name and bio`
+    })
+}})
 
+
+
+server.use('*', (req, res) => {
+    res.status(404).json({
+        message: 'not found'
+    })
+})
 module.exports = server; // EXPORT YOUR SERVER instead of {}
