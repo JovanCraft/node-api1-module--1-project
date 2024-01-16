@@ -58,6 +58,24 @@ server.post('/api/users', async(req, res) => {
 
 })
 
+server.delete('/api/users/:id', async (req, res) => {
+    try {
+        const { id } = req.params
+        const userUpForDeletion = await users.findById(id)
+        if(!userUpForDeletion){
+            res.status(404).json({
+                message: `does not exist`
+            })
+        } else {
+            const deletedUser = await users.remove(userUpForDeletion.id)
+            res.status(200).json(deletedUser)
+        }
+    } catch(err) {
+        res.status(404).json({
+            message: `does not exist`
+        })
+    }
+})
 
 
 server.use('*', (req, res) => {
