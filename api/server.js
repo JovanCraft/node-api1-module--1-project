@@ -77,10 +77,48 @@ server.delete('/api/users/:id', async (req, res) => {
     }
 })
 
-
-server.use('*', (req, res) => {
-    res.status(404).json({
-        message: 'not found'
-    })
+server.put('/api/users/:id', async (req, res) => {
+    try {
+        const { id } = req.params
+        const specificUser = await users.findById(id)
+        if(!specificUser){
+            res.status(404).json({
+                message: 'does not exist'
+            })
+        } else {
+            if(!req.body.name || !req.body.bio){
+                res.status(400).json({
+                    message: `provide name and bio`
+                })
+            } else {
+                const updatedUser = await users.update(id, req.body)
+                res.status(200).json(updatedUser)
+            }
+        }
+    } catch(err) {
+        res.status(404).json({
+            message: `does not exist`,
+            err: err.message,
+        })
+    }
 })
+
+// server.use('*', (req, res) => {
+//     res.status(404).json({
+//         message: 'not found'
+//     })
+// })
 module.exports = server; // EXPORT YOUR SERVER instead of {}
+
+/*
+    const { id } = req.params
+    const specificUser = await users.findById(id)
+    if(!specificUser){
+        res.status(404).json({
+            message: `does not exist`
+        })
+    } else {
+        const updatedUser = await users.update(specificUser.id, { name, bio })
+        res.status(200).json(updatedUser)
+    }
+*/
